@@ -15,7 +15,9 @@ public class InNeuron implements INeuron{
     public void addInSynapse(Synapse synapse) {}
 
     @Override
-    public void addOutSynapse(Synapse synapse) {}
+    public void addOutSynapse(Synapse synapse) {
+        this.out.add(synapse);
+    }
 
     @Override
     public double getValue() {

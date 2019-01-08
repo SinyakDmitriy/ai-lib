@@ -104,9 +104,17 @@ public class Brain {
 
     private void connectNeuron(INeuron input, Set<INeuron> output){
         for (INeuron neuron : output){
-            Synapse synapse = Synapse.builder()
+            Synapse synapse;
+            if(neuron instanceof ZeroNeuron)
+                synapse = Synapse.builder()
+                        .neuronIn(input)
+                        .neuronOut(neuron)
+                        .weight(1.0d)
+                        .build();
+            else synapse = Synapse.builder()
                     .neuronIn(input)
                     .neuronOut(neuron)
+                    .weight(0.0d)
                     .build();
 
             input.addOutSynapse(synapse);
