@@ -46,17 +46,18 @@ public class Coach {
             oNeuron = neuron;
         }
 
-        for (int i = 0; i < 2500000; i++)
-        for (Map.Entry<Integer, Integer[]> entry : iData.entrySet()){
-            Integer[] value = entry.getValue();
-            fNeuron.setValue(value[0]);
-            sNeuron.setValue(value[1]);
-            oNeuron.correctWeight(value[2]);
+        for (int i = 0; i < 3000000; i++) {
+            double gError = 0;
+            for (Map.Entry<Integer, Integer[]> entry : iData.entrySet()) {
+                Integer[] value = entry.getValue();
+                fNeuron.setValue(value[0]);
+                sNeuron.setValue(value[1]);
+                oNeuron.correctWeight(value[2]);
+                double pError = Math.pow(value[2] - oNeuron.getValue(), 2);
+                gError += pError;
+            }
+            System.out.println((gError / brain.getAll().size()) * 100);
         }
         System.out.println(oNeuron);
-    }
-
-    private boolean checkEnter(double vCurrent, double vCheck, double range){
-        return (vCheck + range) >= vCurrent && (vCheck - range) <= vCurrent;
     }
 }

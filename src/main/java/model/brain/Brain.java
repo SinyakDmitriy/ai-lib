@@ -9,6 +9,7 @@ import java.util.*;
 @Builder
 public class Brain {
     private Map<Long, Set<INeuron>> brainMap;
+    @Builder.Default private Set<Synapse> synapseSet = new HashSet<>();
     private Set<INeuron> all;
 
     @Builder.Default private long inputs = 1;
@@ -37,10 +38,7 @@ public class Brain {
     private Set<INeuron> getInputLayer(long neuronCount){
         Set<INeuron> layerSet = new HashSet<>();
 
-        INeuron defaultNeuron = new ZeroNeuron(0);
-        layerSet.add(defaultNeuron);
-
-        defaultNeuron = new ZeroNeuron(1);
+        INeuron defaultNeuron = new ZeroNeuron(1);
         layerSet.add(defaultNeuron);
 
         for (int i = 0; i < neuronCount; i++) {
@@ -65,22 +63,15 @@ public class Brain {
     private Set<INeuron> getLayer(long neuronCount){
         Set<INeuron> layerSet = new HashSet<>();
 
+        INeuron defaultNeuron = new ZeroNeuron(1);
+        layerSet.add(defaultNeuron);
+
         for (int i = 0; i < neuronCount; i++) {
             INeuron neuron = new Neuron();
             layerSet.add(neuron);
         }
 
         return layerSet;
-    }
-
-    private Set<INeuron> convertToBrainSet(Map<Long, Set<INeuron>> brainMap){
-        Set<INeuron> all = new HashSet<>();
-
-        for (Map.Entry<Long, Set<INeuron>> entry : brainMap.entrySet()){
-            all.addAll(entry.getValue());
-        }
-
-        return all;
     }
 
     private void genereteSynapses(){
@@ -117,6 +108,7 @@ public class Brain {
                     .weight(0.0d)
                     .build();
 
+            this.synapseSet.add(synapse);
             input.addOutSynapse(synapse);
             neuron.addInSynapse(synapse);
         }
@@ -129,5 +121,15 @@ public class Brain {
     public Set<INeuron> getOutputLayer(){
         long size = this.brainMap.size();
         return this.brainMap.get(size - 1);
+    }
+
+    private Set<INeuron> convertToBrainSet(Map<Long, Set<INeuron>> brainMap){
+        Set<INeuron> all = new HashSet<>();
+
+        for (Map.Entry<Long, Set<INeuron>> entry : brainMap.entrySet()){
+            all.addAll(entry.getValue());
+        }
+
+        return all;
     }
 }

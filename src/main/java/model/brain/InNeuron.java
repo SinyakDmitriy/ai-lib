@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-public class InNeuron implements INeuron{
+public class InNeuron implements INeuron {
 
     private double value;
     private Set<Synapse> out = new HashSet<>();
