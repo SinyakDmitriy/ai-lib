@@ -2,15 +2,14 @@ package model.brain;
 
 import lombok.Builder;
 import lombok.Getter;
-import model.coach.IBrainForCoach;
 
 import java.util.*;
 
 @Getter
 @Builder
-public class Brain implements IBrainForCoach {
-    private Map<Long, Set<Neuron>> brainMap;
-    private Set<Neuron> all;
+public class Brain {
+    private Map<Long, Set<INeuron>> brainMap;
+    private Set<INeuron> all;
 
     @Builder.Default private long inputs = 1;
     @Builder.Default private long outputs = 1;
@@ -22,11 +21,11 @@ public class Brain implements IBrainForCoach {
         genereteSynapses();
     }
 
-    private Map<Long, Set<Neuron>> genereteBrainMap(){
-        Map<Long, Set<Neuron>> brainMap = new HashMap<>();
+    private Map<Long, Set<INeuron>> genereteBrainMap(){
+        Map<Long, Set<INeuron>> brainMap = new HashMap<>();
 
-        brainMap.put(0L, getLayer(this.inputs));
-        brainMap.put(layers + 1, getLayer(this.outputs));
+        brainMap.put(0L, getInputLayer(this.inputs));
+        brainMap.put(layers + 1, getOutputLayer(this.outputs));
 
         for (long i = 1; i <= layers; i++) {
             brainMap.put(i, getLayer(this.inputs + 1));
@@ -35,31 +34,59 @@ public class Brain implements IBrainForCoach {
         return brainMap;
     }
 
-    private Set<Neuron> convertToBrainSet(Map<Long, Set<Neuron>> brainMap){
-        Set<Neuron> all = new HashSet<>();
+    private Set<INeuron> getInputLayer(long neuronCount){
+        Set<INeuron> layerSet = new HashSet<>();
 
-        for (Map.Entry<Long, Set<Neuron>> entry : brainMap.entrySet()){
-            all.addAll(entry.getValue());
-        }
+        INeuron defaultNeuron = new ZeroNeuron(0);
+        layerSet.add(defaultNeuron);
 
-        return all;
-    }
-
-    private Set<Neuron> getLayer(long neuronCount){
-        Set<Neuron> layerSet = new HashSet<>();
+        defaultNeuron = new ZeroNeuron(1);
+        layerSet.add(defaultNeuron);
 
         for (int i = 0; i < neuronCount; i++) {
-            Neuron neuron = new Neuron();
+            INeuron neuron = new InNeuron();
             layerSet.add(neuron);
         }
 
         return layerSet;
     }
 
+    private Set<INeuron> getOutputLayer(long neuronCount){
+        Set<INeuron> layerSet = new HashSet<>();
+
+        for (int i = 0; i < neuronCount; i++) {
+            INeuron neuron = new OutNeuron();
+            layerSet.add(neuron);
+        }
+
+        return layerSet;
+    }
+
+    private Set<INeuron> getLayer(long neuronCount){
+        Set<INeuron> layerSet = new HashSet<>();
+
+        for (int i = 0; i < neuronCount; i++) {
+            INeuron neuron = new Neuron();
+            layerSet.add(neuron);
+        }
+
+        return layerSet;
+    }
+
+    private Set<INeuron> convertToBrainSet(Map<Long, Set<INeuron>> brainMap){
+        Set<INeuron> all = new HashSet<>();
+
+        for (Map.Entry<Long, Set<INeuron>> entry : brainMap.entrySet()){
+            all.addAll(entry.getValue());
+        }
+
+        return all;
+    }
+
     private void genereteSynapses(){
         Iterator<Long> iterator = this.brainMap.keySet().iterator();
-        Set<Neuron> current = this.brainMap.get(iterator.next());
-        Set<Neuron> prev;
+        Set<INeuron> current = this.brainMap.get(iterator.next());
+        Set<INeuron> prev;
 
         while (iterator.hasNext()){
             prev = current;
@@ -69,14 +96,14 @@ public class Brain implements IBrainForCoach {
         }
     }
 
-    private void connectNeurons(Set<Neuron> input, Set<Neuron> output){
-        for (Neuron neuron : input){
+    private void connectNeurons(Set<INeuron> input, Set<INeuron> output){
+        for (INeuron neuron : input){
             connectNeuron(neuron, output);
         }
     }
 
-    private void connectNeuron(Neuron input, Set<Neuron> output){
-        for (Neuron neuron : output){
+    private void connectNeuron(INeuron input, Set<INeuron> output){
+        for (INeuron neuron : output){
             Synapse synapse = Synapse.builder()
                     .neuronIn(input)
                     .neuronOut(neuron)
@@ -87,17 +114,12 @@ public class Brain implements IBrainForCoach {
         }
     }
 
-    public Set<Neuron> getInputLayer(){
+    public Set<INeuron> getInputLayer(){
         return brainMap.get(0L);
     }
 
-    public Set<Neuron> getOutputLayer(){
+    public Set<INeuron> getOutputLayer(){
         long size = this.brainMap.size();
         return this.brainMap.get(size - 1);
-    }
-
-    @Override
-    public void setValueInputLayer(double value) {
-
     }
 }

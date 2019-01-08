@@ -27,4 +27,12 @@ public class ZeroNeuron implements INeuron{
     public double getValue() {
         return value;
     }
+
+    @Override
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    @Override
+    public void correctWeight(double error) {}
 }

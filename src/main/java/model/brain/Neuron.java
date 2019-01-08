@@ -26,20 +26,25 @@ public class Neuron implements INeuron{
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Neuron neuron = (Neuron) o;
-
-        if (in != null ? !in.equals(neuron.in) : neuron.in != null) return false;
-        return out != null ? out.equals(neuron.out) : neuron.out == null;
-    }
+    public void setValue(double value) {}
 
     @Override
-    public int hashCode() {
-        int result = in != null ? in.hashCode() : 0;
-        result = 31 * result + (out != null ? out.hashCode() : 0);
-        return result;
+    public void correctWeight(double error) {
+
+        double delta;
+        double value = getValue();
+        double weight;
+
+        double sumError = out.stream()
+                .mapToDouble(i -> i.getWeight() * error)
+                .sum();
+
+        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(sumError));
+
+        for (Synapse synapse : getIn()){
+            delta = value * (1 - value);
+            weight = synapse.getWeight() + N * error * delta * value;
+            synapse.setWeight(weight);
+        }
     }
 }
