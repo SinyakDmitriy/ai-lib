@@ -12,4 +12,5 @@ public class Synapse {
     private INeuron neuronOut;
     private INeuron neuronIn;
     @Builder.Default private double weight = 0.5d;
+    private double dWeight;
 }

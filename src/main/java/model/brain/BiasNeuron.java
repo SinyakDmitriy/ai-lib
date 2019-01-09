@@ -2,16 +2,16 @@ package model.brain;
 
 import lombok.Getter;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
-public class ZeroNeuron implements INeuron{
+public class BiasNeuron implements INeuron{
 
     private double value;
     private Set<Synapse> out = new HashSet<>();
 
-
-    public ZeroNeuron(double value){
+    public BiasNeuron(double value){
         this.value = value;
     }
 
@@ -34,5 +34,14 @@ public class ZeroNeuron implements INeuron{
     }
 
     @Override
-    public void correctWeight(double error, double oValue) {}
+    public void correctWeight(double oDelta) {
+        double iValue = getValue();
+
+        getOut().stream().forEach(i -> {
+            double grad = iValue*oDelta;
+            double deltaW1 = N * grad + a * i.getDWeight();
+            i.setDWeight(deltaW1);
+            i.setWeight(i.getWeight() + i.getDWeight());
+        });
+    }
 }

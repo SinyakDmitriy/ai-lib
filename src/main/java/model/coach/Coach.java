@@ -5,14 +5,14 @@ import model.brain.Brain;
 import model.brain.INeuron;
 import model.brain.InNeuron;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Math.pow;
+import static java.util.Objects.isNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Builder
@@ -20,6 +20,7 @@ public class Coach {
 
     private Brain brain;
     private double error;
+    @Builder.Default private Map<Integer, List<Double>> errorMap = new HashMap<>();
     @Builder.Default private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private void initScheduler(){
@@ -27,18 +28,18 @@ public class Coach {
             public void run() { System.out.println(error); }
         };
         final ScheduledFuture<?> beeperHandle =
-                scheduler.scheduleAtFixedRate(beeper, 2, 2, SECONDS);
+                scheduler.scheduleAtFixedRate(beeper, 1, 2, SECONDS);
     }
 
     public void init(){
 
         initScheduler();
 
-        Map<Integer, Integer[]> iData = new HashMap<>();
-        Integer[] first = {0, 0, 0};
-        Integer[] second = {1, 0, 1};
-        Integer[] third = {0, 1, 1};
-        Integer[] fours = {1, 1, 0};
+        Map<Integer, Double[]> iData = new HashMap<>();
+        Double[] first = {0.1, 0.1, 0.1};
+        Double[] second = {0.9, 0.1, 0.9};
+        Double[] third = {0.9, 0.9, 0.9};
+        Double[] fours = {0.1, 0.9, 0.9};
 
         iData.put(0, first);
         iData.put(1, second);
@@ -64,19 +65,30 @@ public class Coach {
             oNeuron = neuron;
         }
 
-        for (int i = 0; i < 3000000; i++) {
-            double gError = 0;
-            for (Map.Entry<Integer, Integer[]> entry : iData.entrySet()) {
-                Integer[] value = entry.getValue();
+
+        for (int i = 0; i < 300000; i++) {
+            if(i == 280000)
+                System.out.println(0);
+            for (Map.Entry<Integer, Double[]> entry : iData.entrySet()) {
+                Double[] value = entry.getValue();
                 fNeuron.setValue(value[0]);
                 sNeuron.setValue(value[1]);
-                oNeuron.correctWeight(value[2], value[2]);
-                double pError = Math.pow(value[2] - oNeuron.getValue(), 2);
-                gError += pError;
+                double error = pow(value[2] - oNeuron.getValue(), 2) * 100;
+                saveError(entry.getKey(), error);
+                oNeuron.correctWeight(value[2]);
             }
-            error = (gError / iData.size()) * 100;
         }
         this.scheduler.shutdown();
         System.out.println(oNeuron);
+    }
+
+    private void saveError(int index, double error){
+        List<Double> listError = errorMap.get(index);
+        if (isNull(listError)){
+            listError = new ArrayList<>();
+            errorMap.put(index, listError);
+        }
+
+        listError.add(error);
     }
 }

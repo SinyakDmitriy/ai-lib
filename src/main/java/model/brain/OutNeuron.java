@@ -6,15 +6,10 @@ import lombok.Getter;
 public class OutNeuron extends Neuron {
 
     @Override
-    public void correctWeight(double tValue, double oValue) {
+    public void correctWeight(double eValue) {
         double value = getValue();
-        double weight;
-        double error = tValue - value;
-        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(error, value));
+        double delta = ((eValue - value) * ((1 - value) * value));
 
-        for (Synapse synapse : getIn()){
-                weight = synapse.getWeight() + N * error * proiz2(value) * synapse.getNeuronIn().getValue();
-                synapse.setWeight(weight);
-        }
+        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(delta));
     }
 }

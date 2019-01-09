@@ -2,7 +2,8 @@ package model.brain;
 
 import lombok.Getter;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.lang.Math.exp;
 
@@ -29,20 +30,19 @@ public class Neuron implements INeuron {
     public void setValue(double value) {}
 
     @Override
-    public void correctWeight(double error, double oValue) {
+    public void correctWeight(double oDelta) {
 
         double iValue = getValue();
-        double weight;
+        double sumWOutDelta = getOut().stream().mapToDouble(i -> i.getWeight()*oDelta).sum();
+        double delta = (1 - iValue) * iValue * sumWOutDelta;
 
-        double sumError = out.stream()
-                .mapToDouble(i -> i.getWeight() * error)
-                .sum();
+        getOut().stream().forEach(i -> {
+            double grad = iValue*oDelta;
+            double deltaW1 = N * grad + a * i.getDWeight();
+            i.setDWeight(deltaW1);
+            i.setWeight(i.getWeight() + i.getDWeight());
+        });
 
-        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(sumError, iValue));
-
-        for (Synapse synapse : getIn()){
-            weight = synapse.getWeight() + N * error * proiz2(iValue) * synapse.getNeuronIn().getValue();
-            synapse.setWeight(weight);
-        }
+        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(delta));
     }
 }
