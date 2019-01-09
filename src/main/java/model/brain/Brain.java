@@ -29,7 +29,7 @@ public class Brain {
         brainMap.put(layers + 1, getOutputLayer(this.outputs));
 
         for (long i = 1; i <= layers; i++) {
-            brainMap.put(i, getLayer(this.inputs + 1));
+            brainMap.put(i, getLayer(this.inputs + 3));
         }
 
         return brainMap;
@@ -95,18 +95,12 @@ public class Brain {
 
     private void connectNeuron(INeuron input, Set<INeuron> output){
         for (INeuron neuron : output){
-            Synapse synapse;
-            if(neuron instanceof ZeroNeuron)
-                synapse = Synapse.builder()
+            if(neuron instanceof ZeroNeuron) continue;
+            Synapse synapse = Synapse.builder()
                         .neuronIn(input)
                         .neuronOut(neuron)
-                        .weight(1.0d)
+                        .weight(0.5d)
                         .build();
-            else synapse = Synapse.builder()
-                    .neuronIn(input)
-                    .neuronOut(neuron)
-                    .weight(0.0d)
-                    .build();
 
             this.synapseSet.add(synapse);
             input.addOutSynapse(synapse);

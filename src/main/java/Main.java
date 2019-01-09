@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         Brain brain = Brain.builder()
                 .inputs(2)
-                .layers(1)
+                .layers(2)
                 .outputs(1)
                 .build();
 

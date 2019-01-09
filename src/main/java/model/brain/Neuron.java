@@ -29,21 +29,19 @@ public class Neuron implements INeuron {
     public void setValue(double value) {}
 
     @Override
-    public void correctWeight(double error) {
+    public void correctWeight(double error, double oValue) {
 
-        double delta;
-        double value = getValue();
+        double iValue = getValue();
         double weight;
 
         double sumError = out.stream()
                 .mapToDouble(i -> i.getWeight() * error)
                 .sum();
 
-        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(sumError));
+        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(sumError, iValue));
 
         for (Synapse synapse : getIn()){
-            delta = value * (1 - value);
-            weight = synapse.getWeight() + N * error * delta * value;
+            weight = synapse.getWeight() + N * error * proiz2(iValue) * synapse.getNeuronIn().getValue();
             synapse.setWeight(weight);
         }
     }

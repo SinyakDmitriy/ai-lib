@@ -34,5 +34,5 @@ public class ZeroNeuron implements INeuron{
     }
 
     @Override
-    public void correctWeight(double error) {}
+    public void correctWeight(double error, double oValue) {}
 }

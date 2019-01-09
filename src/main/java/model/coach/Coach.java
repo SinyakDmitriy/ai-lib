@@ -8,14 +8,32 @@ import model.brain.InNeuron;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Builder
 public class Coach {
 
     private Brain brain;
-    private TrainingSet trainingSet;
+    private double error;
+    @Builder.Default private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private void initScheduler(){
+        final Runnable beeper = new Runnable() {
+            public void run() { System.out.println(error); }
+        };
+        final ScheduledFuture<?> beeperHandle =
+                scheduler.scheduleAtFixedRate(beeper, 2, 2, SECONDS);
+    }
 
     public void init(){
+
+        initScheduler();
+
         Map<Integer, Integer[]> iData = new HashMap<>();
         Integer[] first = {0, 0, 0};
         Integer[] second = {1, 0, 1};
@@ -52,12 +70,13 @@ public class Coach {
                 Integer[] value = entry.getValue();
                 fNeuron.setValue(value[0]);
                 sNeuron.setValue(value[1]);
-                oNeuron.correctWeight(value[2]);
+                oNeuron.correctWeight(value[2], value[2]);
                 double pError = Math.pow(value[2] - oNeuron.getValue(), 2);
                 gError += pError;
             }
-            System.out.println((gError / brain.getAll().size()) * 100);
+            error = (gError / iData.size()) * 100;
         }
+        this.scheduler.shutdown();
         System.out.println(oNeuron);
     }
 }
