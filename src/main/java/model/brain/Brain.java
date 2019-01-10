@@ -18,6 +18,8 @@ public class Brain {
     @Builder.Default private long outputs = 1;
     @Builder.Default private long layers = 1;
 
+    private double et = 1;
+
     public void init(){
         this.brainMap = genereteBrainMap();
         this.all = convertToBrainSet(brainMap);
@@ -101,7 +103,7 @@ public class Brain {
             Synapse synapse = Synapse.builder()
                         .neuronIn(input)
                         .neuronOut(neuron)
-                        .weight(random())
+                        .weight(et == 1 ? --et : ++et)
                         .build();
 
             this.synapseSet.add(synapse);

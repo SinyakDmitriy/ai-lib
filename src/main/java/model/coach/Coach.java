@@ -38,7 +38,7 @@ public class Coach {
         Map<Integer, Double[]> iData = new HashMap<>();
         Double[] first = {0.1, 0.1, 0.1};
         Double[] second = {0.9, 0.1, 0.9};
-        Double[] third = {0.9, 0.9, 0.9};
+        Double[] third = {0.9, 0.9, 0.1};
         Double[] fours = {0.1, 0.9, 0.9};
 
         iData.put(0, first);
@@ -74,7 +74,6 @@ public class Coach {
                 fNeuron.setValue(value[0]);
                 sNeuron.setValue(value[1]);
                 double error = pow(value[2] - oNeuron.getValue(), 2) * 100;
-                saveError(entry.getKey(), error);
                 oNeuron.correctWeight(value[2]);
             }
         }
