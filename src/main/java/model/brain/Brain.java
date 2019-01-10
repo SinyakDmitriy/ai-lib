@@ -31,7 +31,7 @@ public class Brain {
         brainMap.put(layers + 1, getOutputLayer(this.outputs));
 
         for (long i = 1; i <= layers; i++) {
-            brainMap.put(i, getLayer(this.inputs));
+            brainMap.put(i, getLayer(this.inputs + 2));
         }
 
         return brainMap;
@@ -101,7 +101,7 @@ public class Brain {
             Synapse synapse = Synapse.builder()
                         .neuronIn(input)
                         .neuronOut(neuron)
-                        .weight(0.0)
+                        .weight(random())
                         .build();
 
             this.synapseSet.add(synapse);

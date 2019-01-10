@@ -66,8 +66,8 @@ public class Coach {
         }
 
 
-        for (int i = 0; i < 300000; i++) {
-            if(i == 280000)
+        for (int i = 0; i < 3000; i++) {
+            if(i == 2800)
                 System.out.println(0);
             for (Map.Entry<Integer, Double[]> entry : iData.entrySet()) {
                 Double[] value = entry.getValue();
