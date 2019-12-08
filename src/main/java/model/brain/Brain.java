@@ -18,7 +18,7 @@ public class Brain {
     @Builder.Default private long outputs = 1;
     @Builder.Default private long layers = 1;
 
-    private double et = 1;
+    @Builder.Default private double et = 1;
 
     public void init(){
         this.brainMap = genereteBrainMap();
@@ -100,10 +100,25 @@ public class Brain {
     private void connectNeuron(INeuron input, Set<INeuron> output){
         for (INeuron neuron : output){
             if(neuron instanceof BiasNeuron) continue;
+
+            double w = et;
+
+            if(et == 1){
+                et = 0;
+                w = 0.1;
+            } else {
+                et = 1;
+                w = 0.9;
+            }
+
+            if(input instanceof BiasNeuron) {
+                w = 0.9d;
+            }
+
             Synapse synapse = Synapse.builder()
                         .neuronIn(input)
                         .neuronOut(neuron)
-                        .weight(et == 1 ? --et : ++et)
+                        .weight(w)
                         .build();
 
             this.synapseSet.add(synapse);

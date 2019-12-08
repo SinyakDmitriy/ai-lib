@@ -9,6 +9,8 @@ import java.util.Set;
 public class InNeuron implements INeuron {
 
     private double value;
+    private double error;
+
     private Set<Synapse> out = new HashSet<>();
 
     @Override
@@ -30,14 +32,12 @@ public class InNeuron implements INeuron {
     }
 
     @Override
-    public void correctWeight(double oDelta) {
-        double iValue = getValue();
+    public double updateValue() {
+        return value;
+    }
 
-        getOut().stream().forEach(i -> {
-            double grad = iValue*oDelta;
-            double deltaW1 = N * grad + a * i.getDWeight();
-            i.setDWeight(deltaW1);
-            i.setWeight(i.getWeight() + i.getDWeight());
-        });
+    @Override
+    public void correctWeight(double error) {
+
     }
 }

@@ -67,13 +67,14 @@ public class Coach {
 
 
         for (int i = 0; i < 3000; i++) {
-            if(i == 2800)
+            if(i == 865)
                 System.out.println(0);
             for (Map.Entry<Integer, Double[]> entry : iData.entrySet()) {
                 Double[] value = entry.getValue();
                 fNeuron.setValue(value[0]);
                 sNeuron.setValue(value[1]);
                 double error = pow(value[2] - oNeuron.getValue(), 2) * 100;
+                oNeuron.updateValue();
                 oNeuron.correctWeight(value[2]);
             }
         }

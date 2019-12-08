@@ -1,17 +1,20 @@
 package model.brain;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.lang.Math.exp;
 
 @Getter
 public class Neuron implements INeuron {
 
     private Set<Synapse> in = new HashSet<>();
     private Set<Synapse> out = new HashSet<>();
+
+    @Setter
+    private double error;
+    private double value;
 
     public void addInSynapse(Synapse synapse){
         this.in.add(synapse);
@@ -22,27 +25,34 @@ public class Neuron implements INeuron {
     }
 
     public double getValue(){
-        double value = in.stream().mapToDouble(s -> s.getNeuronIn().getValue() * s.getWeight()).sum();
-        return 1/(1 + exp(-value));
+        return value;
     }
 
     @Override
-    public void setValue(double value) {}
+    public void setValue(double value) {
+        this.value = value;
+    }
 
     @Override
-    public void correctWeight(double oDelta) {
+    public double updateValue() {
+        double uValue = getIn().stream().mapToDouble(i -> i.getNeuronIn().updateValue()*i.getWeight()).sum();
+        uValue = relu(uValue);
+        setValue(uValue);
+        return uValue;
+    }
 
-        double iValue = getValue();
-        double sumWOutDelta = getOut().stream().mapToDouble(i -> i.getWeight()*oDelta).sum();
-        double delta = (1 - iValue) * iValue * sumWOutDelta;
 
-        getOut().stream().forEach(i -> {
-            double grad = iValue*oDelta;
-            double deltaW1 = N * grad + a * i.getDWeight();
-            i.setDWeight(deltaW1);
-            i.setWeight(i.getWeight() + i.getDWeight());
+    @Override
+    public void correctWeight(double e) {
+
+        setError(getOut().stream().mapToDouble(i -> i.getWeight()*e).sum());
+
+        getIn().stream().forEach(i -> {
+            double v = i.getNeuronIn().getValue();
+            double w = i.getWeight();
+            i.setWeight(w + N * getError() * derivativeRelu(v) * v);
         });
 
-        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(delta));
+        getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(getError()));
     }
 }

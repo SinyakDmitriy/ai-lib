@@ -34,14 +34,10 @@ public class BiasNeuron implements INeuron{
     }
 
     @Override
-    public void correctWeight(double oDelta) {
-        double iValue = getValue();
-
-        getOut().stream().forEach(i -> {
-            double grad = iValue*oDelta;
-            double deltaW1 = N * grad + a * i.getDWeight();
-            i.setDWeight(deltaW1);
-            i.setWeight(i.getWeight() + i.getDWeight());
-        });
+    public double updateValue() {
+        return value;
     }
+
+    @Override
+    public void correctWeight(double e) { }
 }
