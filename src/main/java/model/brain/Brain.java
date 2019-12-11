@@ -5,8 +5,6 @@ import lombok.Getter;
 
 import java.util.*;
 
-import static java.lang.Math.random;
-
 @Getter
 @Builder
 public class Brain {
@@ -33,7 +31,7 @@ public class Brain {
         brainMap.put(layers + 1, getOutputLayer(this.outputs));
 
         for (long i = 1; i <= layers; i++) {
-            brainMap.put(i, getLayer(this.inputs + 2));
+            brainMap.put(i, getLayer(this.inputs + 1, i));
         }
 
         return brainMap;
@@ -42,13 +40,15 @@ public class Brain {
     private Set<INeuron> getInputLayer(long neuronCount){
         Set<INeuron> layerSet = new HashSet<>();
 
-        INeuron defaultNeuron = new BiasNeuron(1);
-        layerSet.add(defaultNeuron);
-
         for (int i = 0; i < neuronCount; i++) {
             INeuron neuron = new InNeuron();
+            neuron.setNum("in/" + i);
             layerSet.add(neuron);
         }
+
+        INeuron defaultNeuron = new BiasNeuron(0.9);
+        defaultNeuron.setNum("in/" + layerSet.size());
+        layerSet.add(defaultNeuron);
 
         return layerSet;
     }
@@ -58,20 +58,19 @@ public class Brain {
 
         for (int i = 0; i < neuronCount; i++) {
             INeuron neuron = new OutNeuron();
+            neuron.setNum("out/" + i);
             layerSet.add(neuron);
         }
 
         return layerSet;
     }
 
-    private Set<INeuron> getLayer(long neuronCount){
+    private Set<INeuron> getLayer(long neuronCount, long numLayer){
         Set<INeuron> layerSet = new HashSet<>();
-
-        INeuron defaultNeuron = new BiasNeuron(1);
-        layerSet.add(defaultNeuron);
 
         for (int i = 0; i < neuronCount; i++) {
             INeuron neuron = new Neuron();
+            neuron.setNum(numLayer + "/" + i);
             layerSet.add(neuron);
         }
 

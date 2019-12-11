@@ -8,6 +8,7 @@ import java.util.Set;
 @Getter
 public class InNeuron implements INeuron {
 
+    private String num;
     private double value;
     private double error;
 
@@ -27,6 +28,11 @@ public class InNeuron implements INeuron {
     }
 
     @Override
+    public void setNum(String num) {
+        this.num = num;
+    }
+
+    @Override
     public void setValue(double value) {
         this.value = value;
     }
@@ -39,5 +45,13 @@ public class InNeuron implements INeuron {
     @Override
     public void correctWeight(double error) {
 
+    }
+
+    @Override
+    public String toString() {
+        return "InNeuron{" +
+                "num='" + num + '\'' +
+                ", value=" + value +
+                '}';
     }
 }

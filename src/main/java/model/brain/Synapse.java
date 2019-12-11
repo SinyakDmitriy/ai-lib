@@ -12,4 +12,11 @@ public class Synapse {
     private INeuron neuronOut;
     private INeuron neuronIn;
     private double weight;
+
+    @Override
+    public String toString() {
+        return "Synapse{" +
+                "weight=" + weight +
+                '}';
+    }
 }

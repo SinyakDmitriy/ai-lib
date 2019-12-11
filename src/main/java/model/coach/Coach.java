@@ -31,7 +31,7 @@ public class Coach {
                 scheduler.scheduleAtFixedRate(beeper, 1, 2, SECONDS);
     }
 
-    public void init(){
+    public void init(Map<Long, Double> map){
 
         initScheduler();
 
@@ -66,16 +66,24 @@ public class Coach {
         }
 
 
-        for (int i = 0; i < 3000; i++) {
-            if(i == 865)
+        for (int i = 0; i < 200000; i++) {
+            if(i == 20000)
                 System.out.println(0);
             for (Map.Entry<Integer, Double[]> entry : iData.entrySet()) {
-                Double[] value = entry.getValue();
+                int j = (int) ((Math.random() * 10) + (Math.random()*100));
+
+                Double[] value = new Double[] {0.1, 0.1, 0.1};
+                if(j%4 == 0) value = iData.get(0);
+                if(j%4 == 1) value = iData.get(1);
+                if(j%4 == 2) value = iData.get(2);
+                if(j%4 == 3) value = iData.get(3);
+
                 fNeuron.setValue(value[0]);
                 sNeuron.setValue(value[1]);
-                double error = pow(value[2] - oNeuron.getValue(), 2) * 100;
                 oNeuron.updateValue();
                 oNeuron.correctWeight(value[2]);
+                double error = pow(value[2] - oNeuron.getValue(), 2) * 100;
+                map.put((long)i, error);
             }
         }
         this.scheduler.shutdown();

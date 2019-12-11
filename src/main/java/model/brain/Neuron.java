@@ -9,6 +9,7 @@ import java.util.Set;
 @Getter
 public class Neuron implements INeuron {
 
+    private String num;
     private Set<Synapse> in = new HashSet<>();
     private Set<Synapse> out = new HashSet<>();
 
@@ -26,6 +27,11 @@ public class Neuron implements INeuron {
 
     public double getValue(){
         return value;
+    }
+
+    @Override
+    public void setNum(String num) {
+        this.num = num;
     }
 
     @Override
@@ -54,5 +60,14 @@ public class Neuron implements INeuron {
         });
 
         getIn().stream().forEach(i -> i.getNeuronIn().correctWeight(getError()));
+    }
+
+    @Override
+    public String toString() {
+        return "Neuron{" +
+                "num='" + num + '\'' +
+                ", value=" + value +
+                ", error=" + error +
+                '}';
     }
 }
